@@ -28,24 +28,24 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-WUG-domofonrfid.elf \
+RS485_RFID_Firmware.elf \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-WUG-domofonrfid.list \
+RS485_RFID_Firmware.list \
 
 OBJCOPY_BIN += \
-WUG-domofonrfid.bin \
+RS485_RFID_Firmware.bin \
 
 
 # All Target
-all: WUG-domofonrfid.elf secondary-outputs
+all: RS485_RFID_Firmware.elf secondary-outputs
 
 # Tool invocations
-WUG-domofonrfid.elf: $(OBJS) $(USER_OBJS) C:\Users\wiki1\Documents\cubeide\WUG-domofonrfid\STM32F103C8TX_FLASH.ld
-	arm-none-eabi-gcc -o "WUG-domofonrfid.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\wiki1\Documents\cubeide\WUG-domofonrfid\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="WUG-domofonrfid.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+RS485_RFID_Firmware.elf: $(OBJS) $(USER_OBJS) C:\Users\wiki1\Documents\cubeide\RS485_RFID_Firmware\STM32F103C8TX_FLASH.ld
+	arm-none-eabi-gcc -o "RS485_RFID_Firmware.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\wiki1\Documents\cubeide\RS485_RFID_Firmware\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="RS485_RFID_Firmware.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -54,13 +54,13 @@ default.size.stdout: $(EXECUTABLES)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-WUG-domofonrfid.list: $(EXECUTABLES)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "WUG-domofonrfid.list"
+RS485_RFID_Firmware.list: $(EXECUTABLES)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "RS485_RFID_Firmware.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-WUG-domofonrfid.bin: $(EXECUTABLES)
-	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "WUG-domofonrfid.bin"
+RS485_RFID_Firmware.bin: $(EXECUTABLES)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "RS485_RFID_Firmware.bin"
 	@echo 'Finished building: $@'
 	@echo ' '
 

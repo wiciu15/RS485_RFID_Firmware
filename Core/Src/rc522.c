@@ -253,7 +253,7 @@ void MFRC522_Init(void) {
 	MFRC522_WriteRegister(MFRC522_REG_T_PRESCALER, 0x3E);
 	MFRC522_WriteRegister(MFRC522_REG_T_RELOAD_L, 30);
 	MFRC522_WriteRegister(MFRC522_REG_T_RELOAD_H, 0);
-	MFRC522_WriteRegister(MFRC522_REG_RF_CFG, 0x10);				// 23dB gain to reduce working range and RF dead zone near device case
+	MFRC522_WriteRegister(MFRC522_REG_RF_CFG, 0x70);				// 48dB gain
 	MFRC522_WriteRegister(MFRC522_REG_TX_AUTO, 0x40);
 	MFRC522_WriteRegister(MFRC522_REG_MODE, 0x3D);
 	MFRC522_AntennaOn();																		// Open the antenna
