@@ -249,11 +249,11 @@ uint8_t MFRC522_Write(uint8_t blockAddr, uint8_t* writeData) {
 
 void MFRC522_Init(void) {
 	MFRC522_Reset();
-	MFRC522_WriteRegister(MFRC522_REG_T_MODE, 0x8D);
-	MFRC522_WriteRegister(MFRC522_REG_T_PRESCALER, 0x3E);
-	MFRC522_WriteRegister(MFRC522_REG_T_RELOAD_L, 30);
-	MFRC522_WriteRegister(MFRC522_REG_T_RELOAD_H, 0);
-	MFRC522_WriteRegister(MFRC522_REG_RF_CFG, 0x70);				// 48dB gain
+	MFRC522_WriteRegister(MFRC522_REG_T_MODE, 0x80);
+	MFRC522_WriteRegister(MFRC522_REG_T_PRESCALER, 0xA9);
+	MFRC522_WriteRegister(MFRC522_REG_T_RELOAD_L, 0xE8);
+	MFRC522_WriteRegister(MFRC522_REG_T_RELOAD_H, 0x03);
+	MFRC522_WriteRegister(MFRC522_REG_RF_CFG, 0x50);				// 38dB gain
 	MFRC522_WriteRegister(MFRC522_REG_TX_AUTO, 0x40);
 	MFRC522_WriteRegister(MFRC522_REG_MODE, 0x3D);
 	MFRC522_AntennaOn();																		// Open the antenna
@@ -268,7 +268,7 @@ void MFRC522_AntennaOn(void) {
 	uint8_t temp;
 
 	temp = MFRC522_ReadRegister(MFRC522_REG_TX_CONTROL);
-	if (!(temp & 0x03)) MFRC522_SetBitMask(MFRC522_REG_TX_CONTROL, 0x03);
+	if ((temp & 0x03)!=0x03) MFRC522_SetBitMask(MFRC522_REG_TX_CONTROL, 0x03);
 }
 
 void MFRC522_AntennaOff(void) {

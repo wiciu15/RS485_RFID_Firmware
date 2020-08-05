@@ -126,7 +126,7 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   MFRC522_Init();
-  HAL_TIM_PWM_Start_IT(&htim2, TIM_CHANNEL_ALL);
+  //HAL_TIM_PWM_Start_IT(&htim2, TIM_CHANNEL_ALL);
 
 
   /* USER CODE END 2 */
