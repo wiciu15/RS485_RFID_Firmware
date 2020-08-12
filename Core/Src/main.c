@@ -434,7 +434,7 @@ void StartDefaultTask(void const * argument)
 			cardIDdec += (uint32_t)cardIDarray[1] << 16;
 			cardIDdec += (uint32_t)cardIDarray[2] <<  8;
 			cardIDdec += (uint32_t)cardIDarray[3];
-			if(cardIDdec!=lastCardIDdec || (lastRFReadSystick+15000 < xTaskGetTickCount()) || lastRFReadSystick>xTaskGetTickCount()){ //dont accept 2 reads of the same card within 10 sec(ignore if systick overflowed)
+			if(cardIDdec!=lastCardIDdec || (lastRFReadSystick+7000 < xTaskGetTickCount()) || lastRFReadSystick>xTaskGetTickCount()){ //dont accept 2 reads of the same card within 10 sec(ignore if systick overflowed)
 
 				lastCardIDdec=cardIDdec;
 				lastRFReadSystick=xTaskGetTickCount();
@@ -471,17 +471,21 @@ void vReceiveDataTask(void const * argument)
 	/* Infinite loop */
 	for(;;)
 	{
+		uint8_t UARTReceiveBuffer=8;
+		uint8_t* pUARTReceiveBuffer=&UARTReceiveBuffer;
+		HAL_UART_Receive(&huart1, pUARTReceiveBuffer, 1, 100); //start receiver and read anything that was in UART already
+
 		//////SEND PING AND THEN CARD UID VIA RS485////
+		//__HAL_UART_FLUSH_DRREGISTER(&huart1);
 		char UARTSendBuffer[20];
 		snprintf(UARTSendBuffer,20,"PING\r\n");
-		HAL_GPIO_WritePin(RS485_TXENABLE_GPIO_Port, RS485_TXENABLE_Pin, GPIO_PIN_SET); //enable TX on transciever
-		osDelay(10);
+		HAL_GPIO_WritePin(RS485_TXENABLE_GPIO_Port, RS485_TXENABLE_Pin, GPIO_PIN_SET); //enable TX on transceiver
+		osDelay(2);
 		HAL_UART_Transmit(&huart1, (uint8_t *) UARTSendBuffer, strlen(UARTSendBuffer),15); //transmit in blocking mode - no need to implement DMA or interrupts
 		HAL_GPIO_WritePin(RS485_TXENABLE_GPIO_Port, RS485_TXENABLE_Pin, GPIO_PIN_RESET); //RS485 transceiver is high impedance (listening for response)
 
-		uint8_t UARTReceiveBuffer=8;
-		uint8_t* pUARTReceiveBuffer=&UARTReceiveBuffer;
-		//__HAL_UART_FLUSH_DRREGISTER(&huart1);
+		osDelay(5); //wait for indoor unit to process and reply
+
 		switch(HAL_UART_Receive(&huart1, pUARTReceiveBuffer, 1, 100)){
 		case HAL_TIMEOUT:
 			device_status=CONN_TIMEOUT;
@@ -492,7 +496,7 @@ void vReceiveDataTask(void const * argument)
 		case HAL_OK:
 			if(UARTReceiveBuffer=='9'){ //indoor unit responds with '9' if its ready to process new UID
 				snprintf(UARTSendBuffer,20,"ID%lu\r\n",lastCardIDdec);
-				HAL_GPIO_WritePin(RS485_TXENABLE_GPIO_Port, RS485_TXENABLE_Pin, GPIO_PIN_SET); //enable TX on transciever
+				HAL_GPIO_WritePin(RS485_TXENABLE_GPIO_Port, RS485_TXENABLE_Pin, GPIO_PIN_SET); //enable TX on transceiver
 				HAL_UART_Transmit(&huart1, (uint8_t *) UARTSendBuffer, strlen(UARTSendBuffer),15); //transmit in blocking mode - no need to implement DMA or interrupts
 				osDelay(10);
 				HAL_GPIO_WritePin(RS485_TXENABLE_GPIO_Port, RS485_TXENABLE_Pin, GPIO_PIN_RESET); //RS485 transceiver is high impedance (listening for response)
@@ -536,6 +540,10 @@ void vReceiveDataTask(void const * argument)
 						device_status=READY;
 						break;
 				}
+			}
+			else{
+				device_status=ERROR_READER;
+				break;
 			}
 			break;
 		}
